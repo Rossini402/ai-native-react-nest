@@ -38,7 +38,7 @@ function RootLayout() {
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3.5">
           <div className="flex items-center gap-2.5">
             <span className="text-sm font-semibold tracking-tight">
-              AI-Native Full-Stack Starter
+              ai-native-react-nest
             </span>
             <Badge variant="secondary">React + NestJS + Zod</Badge>
           </div>

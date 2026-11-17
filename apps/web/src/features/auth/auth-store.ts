@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSyncExternalStore } from "react";
 import { authApi, onUnauthorizedResponse, setAccessToken } from "../../lib/api-client";
 
-const STORAGE_KEY = "ai_stage_auth_session";
+const STORAGE_KEY = "ai_native_react_nest_auth_session";
 const listeners = new Set<() => void>();
 
 function readInitialSession(): AuthSession | null {

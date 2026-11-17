@@ -7,6 +7,6 @@ export default defineConfig({
   dbCredentials: {
     url:
       process.env.DATABASE_URL ??
-      "postgresql://app:app_dev_password@localhost:5432/ai_stage_dev",
+      "postgresql://app:app_dev_password@localhost:5432/ai_native_react_nest_dev",
   },
 });

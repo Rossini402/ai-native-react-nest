@@ -1,6 +1,6 @@
-# AI-Native Full-Stack Monorepo Scaffold (React + NestJS)
+# ai-native-react-nest
 
-面向 **Spec-Driven Development (SDD) + 分层上下文工程 + 确定性验证套具 (Harness)** 设计的全栈确定性业务系统脚手架。
+AI-Native Full-Stack Monorepo Template（React 19 + NestJS 11 + Zod Contracts + Drizzle + Storybook 8）—— 面向 **Spec-Driven Development (SDD) + 分层上下文工程 + 确定性验证套具 (Harness)** 设计。
 
 ## 架构概览
 
