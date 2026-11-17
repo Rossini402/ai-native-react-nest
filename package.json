@@ -1,0 +1,27 @@
+{
+  "name": "ai-native-fullstack-starter",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.6.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @repo/contracts build && pnpm --parallel --filter @repo/api --filter @repo/web dev",
+    "build": "pnpm --filter @repo/contracts build && pnpm --filter @repo/api build && pnpm --filter @repo/web build",
+    "typecheck": "pnpm --filter @repo/contracts build && pnpm --filter @repo/api typecheck && pnpm --filter @repo/web typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "pnpm --filter @repo/contracts build && pnpm -r test",
+    "storybook": "pnpm --filter @repo/web storybook",
+    "storybook:build": "pnpm --filter @repo/contracts build && pnpm --filter @repo/web build-storybook",
+    "check:gov": "./scripts/check-governance.sh",
+    "check:arch": "node ./scripts/check-architecture.mjs",
+    "verify": "./scripts/verify.sh",
+    "spec:new": "./.agents/skills/spec-driven-feature/scripts/new-spec.sh"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "typescript": "^5.8.2"
+  }
+}

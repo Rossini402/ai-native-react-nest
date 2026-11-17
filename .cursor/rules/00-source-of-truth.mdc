@@ -1,0 +1,15 @@
+---
+description: Global AI-Native engineering source of truth bridge for Cursor
+alwaysApply: true
+---
+
+# Single Source of Truth Bridge
+
+Do NOT maintain duplicate rules in `.cursor/rules/`.
+Always read and strictly enforce the repository's canonical `AGENTS.md` hierarchy:
+
+1. Global rules, workflow, and verification harness: [AGENTS.md](../../AGENTS.md)
+2. Shared contract rules (`@repo/contracts`): [packages/contracts/AGENTS.md](../../packages/contracts/AGENTS.md)
+3. NestJS backend rules (`@repo/api`): [apps/api/AGENTS.md](../../apps/api/AGENTS.md)
+4. React frontend rules (`@repo/web`): [apps/web/AGENTS.md](../../apps/web/AGENTS.md)
+5. Reusable SOP workflows (SDD, Adversarial Review, Parallel Full-Stack): `.agents/skills/*/SKILL.md`
