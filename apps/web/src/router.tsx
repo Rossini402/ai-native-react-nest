@@ -10,6 +10,8 @@ import {
 import { AppShell } from "./components/layout/app-shell";
 import { authStore, signOut, useAuthSession, useLoginMutation } from "./features/auth/auth-store";
 import { LoginForm } from "./features/auth/login-form";
+import { ReleaseBoard } from "./features/releases/release-board";
+import { useReleases } from "./features/releases/use-releases";
 import { TaskBoard } from "./features/tasks/task-board";
 import { useTasks } from "./features/tasks/use-tasks";
 
@@ -52,6 +54,44 @@ function WorkspacePage() {
   );
 }
 
+function ReleasesPage() {
+  const session = useAuthSession();
+  const {
+    releases,
+    meta,
+    statusFilter,
+    environmentFilter,
+    loading,
+    error,
+    setStatusFilter,
+    setEnvironmentFilter,
+    setPage,
+    createRelease,
+    reviewRelease,
+  } = useReleases();
+
+  if (!session) {
+    return <Navigate to="/login" />;
+  }
+
+  return (
+    <ReleaseBoard
+      releases={releases}
+      meta={meta}
+      currentUserRole={session.user.role}
+      statusFilter={statusFilter}
+      environmentFilter={environmentFilter}
+      loading={loading}
+      error={error}
+      onStatusFilterChange={setStatusFilter}
+      onEnvironmentFilterChange={setEnvironmentFilter}
+      onPageChange={setPage}
+      onCreate={createRelease}
+      onReview={reviewRelease}
+    />
+  );
+}
+
 function LoginPage() {
   const navigate = useNavigate();
   const loginMutation = useLoginMutation(() => {
@@ -84,6 +124,17 @@ const indexRoute = createRoute({
   component: WorkspacePage,
 });
 
+const releasesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/releases",
+  beforeLoad: ({ context }) => {
+    if (!context.isAuthenticated()) {
+      throw redirect({ to: "/login" });
+    }
+  },
+  component: ReleasesPage,
+});
+
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/login",
@@ -95,7 +146,7 @@ const loginRoute = createRoute({
   component: LoginPage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, loginRoute]);
+const routeTree = rootRoute.addChildren([indexRoute, releasesRoute, loginRoute]);
 
 export const appRouter = createRouter({
   routeTree,

@@ -52,16 +52,14 @@ export function ReleaseListItem({
   return (
     <li
       className={cn(
-        "flex flex-col gap-3 rounded-xl border border-zinc-200/80 border-l-4 bg-white p-4 shadow-[0_1px_2px_rgba(9,9,11,0.02)] transition-shadow hover:shadow-xs",
+        "flex flex-col gap-3 rounded-[var(--radius-control)] border border-[var(--color-border)] border-l-4 bg-[var(--color-card)] p-4 shadow-2xs transition-shadow hover:shadow-xs",
         ACCENT_BORDER[item.status],
       )}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-semibold tracking-tight text-zinc-950">
-            {item.serviceName}
-          </span>
-          <code className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 font-mono text-xs font-medium text-zinc-800">
+          <span className="text-sm font-semibold tracking-tight">{item.serviceName}</span>
+          <code className="rounded-md border border-[var(--color-border)] bg-[var(--color-muted)] px-2 py-0.5 font-mono text-xs font-medium">
             {item.version}
           </code>
           <Badge variant={ENV_VARIANT[item.environment]}>{item.environment}</Badge>
@@ -78,18 +76,20 @@ export function ReleaseListItem({
         </div>
       </div>
 
-      <p className="text-sm leading-relaxed text-zinc-700">{item.changelog}</p>
+      <p className="text-sm leading-relaxed">{item.changelog}</p>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-400">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--color-muted-foreground)]">
         <span>Requested by {item.requestedByEmail}</span>
         {item.reviewedByEmail && <span>· Reviewed by {item.reviewedByEmail}</span>}
         {item.reviewNote && (
-          <span className="font-medium text-zinc-600">· Note: &ldquo;{item.reviewNote}&rdquo;</span>
+          <span className="font-medium text-[var(--color-foreground)]">
+            · Note: &ldquo;{item.reviewNote}&rdquo;
+          </span>
         )}
       </div>
 
       {item.status === "pending" && currentUserRole === "admin" && (
-        <div className="flex flex-wrap items-center gap-2 rounded-lg bg-zinc-50 p-2.5">
+        <div className="flex flex-wrap items-center gap-2 rounded-[var(--radius-control)] bg-[var(--color-muted)]/70 p-2.5">
           <Button size="sm" disabled={isReviewing} onClick={onApprove}>
             Approve
           </Button>
@@ -99,7 +99,7 @@ export function ReleaseListItem({
             disabled={isReviewing}
             value={rejectNote}
             onChange={(e) => onRejectNoteChange(e.target.value)}
-            className="h-8 flex-1 bg-white text-xs"
+            className="h-8 flex-1 bg-[var(--color-card)] text-xs"
           />
           <Button size="sm" variant="destructive" disabled={isReviewing} onClick={onReject}>
             Reject

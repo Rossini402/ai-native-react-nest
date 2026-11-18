@@ -1,6 +1,6 @@
 import type { AuthSession } from "@repo/contracts";
 import { Link } from "@tanstack/react-router";
-import { CheckSquare, Layers, LogOut, ShieldCheck } from "lucide-react";
+import { CheckSquare, Layers, LogOut, Rocket, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { BrandPresetSwitcher } from "../../design-system/brand-preset-switcher";
 import { ACTIVE_UI_KIT } from "../../design-system/tokens";
@@ -61,6 +61,17 @@ export function AppShell({ session, onSignOut, children }: AppShellProps) {
               <CheckSquare className="h-4 w-4" />
               <span>Engineering Tasks</span>
             </Link>
+            <Link
+              to="/releases"
+              activeProps={{
+                className:
+                  "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] shadow-xs hover:opacity-95",
+              }}
+              className="flex items-center gap-2.5 rounded-[var(--radius-control)] px-3 py-2 text-sm font-medium text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+            >
+              <Rocket className="h-4 w-4" />
+              <span>Release Approvals</span>
+            </Link>
           </nav>
         </div>
 
@@ -108,7 +119,30 @@ export function AppShell({ session, onSignOut, children }: AppShellProps) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 md:hidden">
-          <span className="text-sm font-semibold tracking-tight">ai-native-react-nest</span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold tracking-tight">ai-native-react-nest</span>
+            <nav aria-label="Mobile navigation" className="flex items-center gap-1">
+              <Link
+                to="/"
+                activeOptions={{ exact: true }}
+                activeProps={{
+                  className: "bg-[var(--color-primary)] text-[var(--color-primary-foreground)]",
+                }}
+                className="rounded-md px-2.5 py-1 text-xs font-medium text-[var(--color-muted-foreground)]"
+              >
+                Tasks
+              </Link>
+              <Link
+                to="/releases"
+                activeProps={{
+                  className: "bg-[var(--color-primary)] text-[var(--color-primary-foreground)]",
+                }}
+                className="rounded-md px-2.5 py-1 text-xs font-medium text-[var(--color-muted-foreground)]"
+              >
+                Releases
+              </Link>
+            </nav>
+          </div>
           <Button variant="outline" size="sm" onClick={onSignOut}>
             Sign Out
           </Button>

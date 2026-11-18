@@ -5,6 +5,7 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { BrandPresetSwitcher } from "../../design-system/brand-preset-switcher";
+import { cn } from "../../lib/cn";
 
 export interface LoginFormProps {
   loading: boolean;
@@ -21,6 +22,9 @@ export function LoginForm({ loading, error, onSubmit }: LoginFormProps) {
     void onSubmit({ email: email.trim(), password });
   };
 
+  const isAdminSelected = email.trim().toLowerCase() === "admin@example.com";
+  const isMemberSelected = email.trim().toLowerCase() === "member@example.com";
+
   return (
     <div className="mx-auto grid w-full max-w-4xl grid-cols-1 overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] shadow-[0_24px_60px_rgba(9,9,11,0.08)] md:grid-cols-12">
       <div className="flex flex-col justify-between border-b border-[var(--color-border)] bg-[var(--color-muted)]/65 p-8 md:col-span-5 md:border-r md:border-b-0">
@@ -34,14 +38,14 @@ export function LoginForm({ loading, error, onSubmit }: LoginFormProps) {
 
           <div className="flex flex-col gap-2.5 pt-1">
             <Badge variant="accent" className="w-fit">
-              Spec-Driven Mother Template
+              Track A · shadcn/ui SaaS
             </Badge>
             <h1 className="text-2xl font-semibold leading-snug tracking-tight">
-              Unified Design System &amp; Full-Stack Harness
+              Release Approval Workbench
             </h1>
             <p className="text-xs leading-relaxed text-[var(--color-muted-foreground)]">
-              Single-source typography and brand tokens powering shadcn/ui or Ant Design v5 with
-              zero color drift.
+              End-to-end Spec 0006 demo featuring SemVer contracts, RBAC approval gates, and
+              single-source brand presets.
             </p>
           </div>
         </div>
@@ -51,22 +55,60 @@ export function LoginForm({ loading, error, onSubmit }: LoginFormProps) {
           <div className="flex flex-col gap-2 border-t border-[var(--color-border)] pt-4 text-xs text-[var(--color-muted-foreground)]">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-[var(--color-primary)]" />
-              <span>Bundled Inter + JetBrains Mono Fonts</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-[var(--color-primary)]" />
-              <span>Default-deny JWT Guard + Trace ID</span>
+              <span>Admin vs Member RBAC Demo</span>
             </div>
           </div>
         </div>
       </div>
 
       <div className="flex flex-col justify-center p-7 sm:p-10 md:col-span-7">
-        <div className="mb-6">
+        <div className="mb-5">
           <h2 className="text-lg font-semibold tracking-tight">Sign in to Workspace</h2>
           <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-            Default development administrator credentials pre-filled (`admin@example.com`)
+            Switch between pre-seeded demo personas below to inspect RBAC approval controls
           </p>
+        </div>
+
+        <div className="mb-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => {
+              setEmail("admin@example.com");
+              setPassword("AdminPassword123!");
+            }}
+            className={cn(
+              "flex flex-col items-start gap-1 rounded-[var(--radius-control)] border p-3 text-left transition-all cursor-pointer",
+              isAdminSelected
+                ? "border-[var(--color-primary)] bg-[var(--color-accent-subtle)]"
+                : "border-[var(--color-border)] bg-[var(--color-muted)]/40 hover:bg-[var(--color-muted)]",
+            )}
+          >
+            <span className="text-xs font-semibold">Use Admin Demo</span>
+            <span className="text-xs text-[var(--color-muted-foreground)]">
+              Approve &amp; reject releases
+            </span>
+          </button>
+
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => {
+              setEmail("member@example.com");
+              setPassword("MemberPassword123!");
+            }}
+            className={cn(
+              "flex flex-col items-start gap-1 rounded-[var(--radius-control)] border p-3 text-left transition-all cursor-pointer",
+              isMemberSelected
+                ? "border-[var(--color-primary)] bg-[var(--color-accent-subtle)]"
+                : "border-[var(--color-border)] bg-[var(--color-muted)]/40 hover:bg-[var(--color-muted)]",
+            )}
+          >
+            <span className="text-xs font-semibold">Use Member Demo</span>
+            <span className="text-xs text-[var(--color-muted-foreground)]">
+              Submit &amp; read-only queue
+            </span>
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -109,7 +151,7 @@ export function LoginForm({ loading, error, onSubmit }: LoginFormProps) {
             </div>
           )}
 
-          <Button type="submit" size="lg" disabled={loading} className="mt-2 w-full">
+          <Button type="submit" size="lg" disabled={loading} className="mt-1 w-full">
             <span>{loading ? "Signing in..." : "Sign In"}</span>
             {!loading && <ArrowRight className="h-4 w-4" />}
           </Button>

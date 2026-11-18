@@ -9,13 +9,20 @@ import {
   ReviewReleaseInputSchema,
   type UserRole,
 } from "@repo/contracts";
+import { AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { EmptyState } from "../../components/ui/empty-state";
-import { AlertCircleIcon } from "../../components/ui/icons";
 import { MetricCard } from "../../components/ui/metric-card";
+import { PaginationFooter } from "../../components/ui/pagination-footer";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 import { cn } from "../../lib/cn";
 import { ReleaseCreateForm } from "./release-create-form";
 import { ReleaseListItem } from "./release-list-item";
@@ -95,15 +102,13 @@ export function ReleaseBoard({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-semibold tracking-tight text-zinc-950">
-              Release Approvals
-            </h1>
+            <h1 className="text-xl font-semibold tracking-tight">Release Approvals</h1>
             <Badge variant={currentUserRole === "admin" ? "accent" : "secondary"}>
               role: {currentUserRole}
             </Badge>
           </div>
-          <p className="mt-1 text-sm text-zinc-500">
-            Governed deployment gate with SemVer validation, RBAC enforcement, and audit trail
+          <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
+            Governed deployment gate powered by shadcn/ui Radix primitives and unified brand tokens
           </p>
         </div>
       </div>
@@ -114,7 +119,7 @@ export function ReleaseBoard({
         <MetricCard
           label="Production Candidates"
           value={prodOnPage}
-          labelClassName="text-indigo-600"
+          labelClassName="text-[var(--color-primary)]"
         />
       </div>
 
@@ -124,13 +129,13 @@ export function ReleaseBoard({
         </div>
 
         <Card aria-label="Release Approval Queue" className="lg:col-span-7">
-          <CardHeader className="flex flex-col gap-3 border-b border-zinc-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+          <CardHeader className="flex flex-col gap-3 border-b border-[var(--color-border)] pb-4 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle>Release Approval Queue</CardTitle>
             <div className="flex flex-wrap items-center gap-2">
               <div
                 role="tablist"
                 aria-label="Filter by status"
-                className="flex rounded-lg bg-zinc-100 p-0.5"
+                className="flex rounded-[var(--radius-control)] bg-[var(--color-muted)] p-0.5"
               >
                 {STATUS_TABS.map((tab) => (
                   <button
@@ -145,46 +150,51 @@ export function ReleaseBoard({
                     className={cn(
                       "rounded-md px-2.5 py-1 text-xs font-medium transition-all cursor-pointer",
                       statusFilter === tab.value
-                        ? "bg-white text-zinc-950 shadow-2xs"
-                        : "text-zinc-500 hover:text-zinc-800",
+                        ? "bg-[var(--color-card)] text-[var(--color-foreground)] shadow-2xs"
+                        : "text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]",
                     )}
                   >
                     {tab.label}
                   </button>
                 ))}
               </div>
-              <select
-                aria-label="Filter by environment"
-                value={environmentFilter ?? ""}
-                onChange={(e) => {
+              <Select
+                value={environmentFilter ?? "all"}
+                onValueChange={(val) => {
                   setReviewValidationError(null);
-                  const parsed = ReleaseEnvironmentSchema.safeParse(e.target.value);
+                  const parsed = ReleaseEnvironmentSchema.safeParse(val);
                   onEnvironmentFilterChange(parsed.success ? parsed.data : undefined);
                 }}
-                className="h-7 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700"
               >
-                <option value="">All Envs</option>
-                <option value="staging">Staging</option>
-                <option value="production">Production</option>
-              </select>
+                <SelectTrigger aria-label="Filter by environment" className="h-8 w-32 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Envs</SelectItem>
+                  <SelectItem value="staging">Staging</SelectItem>
+                  <SelectItem value="production">Production</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 pt-5">
             {activeAlert && (
               <div
                 role="alert"
-                className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-medium text-rose-700"
+                className="flex items-center gap-2 rounded-[var(--radius-control)] border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-medium text-rose-700"
               >
-                <AlertCircleIcon className="shrink-0" />
+                <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{activeAlert}</span>
               </div>
             )}
 
             {loading ? (
               <div className="flex flex-col gap-3 py-4">
-                <div className="h-24 animate-pulse rounded-xl bg-zinc-100" />
-                <div className="h-24 animate-pulse rounded-xl bg-zinc-100" />
-                <p className="text-center text-xs text-zinc-400">Loading release requests...</p>
+                <div className="h-24 animate-pulse rounded-[var(--radius-control)] bg-[var(--color-muted)]" />
+                <div className="h-24 animate-pulse rounded-[var(--radius-control)] bg-[var(--color-muted)]" />
+                <p className="text-center text-xs text-[var(--color-muted-foreground)]">
+                  Loading release requests...
+                </p>
               </div>
             ) : releases.length === 0 ? (
               <EmptyState
@@ -211,35 +221,14 @@ export function ReleaseBoard({
               </ul>
             )}
 
-            <div className="flex items-center justify-between border-t border-zinc-100 pt-3 text-xs text-zinc-500">
-              <span className="tabular-nums">
-                Page {meta.page} of {Math.max(meta.totalPages, 1)} · {meta.total} total
-              </span>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={loading || meta.page <= 1}
-                  onClick={() => {
-                    setReviewValidationError(null);
-                    onPageChange(meta.page - 1);
-                  }}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={loading || meta.page >= meta.totalPages}
-                  onClick={() => {
-                    setReviewValidationError(null);
-                    onPageChange(meta.page + 1);
-                  }}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
+            <PaginationFooter
+              meta={meta}
+              disabled={loading}
+              onPageChange={(nextPage) => {
+                setReviewValidationError(null);
+                onPageChange(nextPage);
+              }}
+            />
           </CardContent>
         </Card>
       </div>
