@@ -24,8 +24,7 @@ export function resolveRequestId(req: TraceableRequest, res?: TraceableResponse)
 
   const rawHeader = req.headers[REQUEST_ID_HEADER];
   const candidate = Array.isArray(rawHeader) ? rawHeader[0] : rawHeader;
-  const resolved =
-    candidate && SAFE_REQUEST_ID_PATTERN.test(candidate) ? candidate : randomUUID();
+  const resolved = candidate && SAFE_REQUEST_ID_PATTERN.test(candidate) ? candidate : randomUUID();
 
   req.requestId = resolved;
   res?.setHeader(REQUEST_ID_HEADER, resolved);

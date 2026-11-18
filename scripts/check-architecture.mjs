@@ -4,7 +4,7 @@
  * Ensures NestJS Controllers stay free of direct Repository imports and
  * enforces strict DAG dependencies: contracts <- { api, web }.
  */
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const rootDir = process.cwd();
@@ -30,7 +30,7 @@ for (const file of walkTsFiles(join(rootDir, "apps", "api", "src"))) {
   const content = readFileSync(file, "utf8");
   if (/\.repository['"]/.test(content)) {
     violations.push(
-      `${relative(rootDir, file)}: NestJS Controller must not import Repository directly; delegate through Service.`
+      `${relative(rootDir, file)}: NestJS Controller must not import Repository directly; delegate through Service.`,
     );
   }
 }
@@ -41,4 +41,6 @@ if (violations.length > 0) {
   process.exit(1);
 }
 
-console.log("  [PASS] Node AST/Import layer checks passed (Controller -> Service -> Repository)");
+process.stdout.write(
+  "  [PASS] Node AST/Import layer checks passed (Controller -> Service -> Repository)\n",
+);

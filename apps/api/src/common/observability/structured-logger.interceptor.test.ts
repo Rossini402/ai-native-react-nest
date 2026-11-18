@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveRequestId, type TraceableRequest } from "./request-id.js";
+import { type TraceableRequest, resolveRequestId } from "./request-id.js";
 import type { AccessLogEntry } from "./structured-logger.interceptor.js";
 
 describe("Observability Request Correlation", () => {
@@ -18,7 +18,7 @@ describe("Observability Request Correlation", () => {
 
   it("rejects newline/log-injection x-request-id headers and generates a clean UUID", () => {
     const req: TraceableRequest = {
-      headers: { "x-request-id": "bad\n{\"injected\":true}" },
+      headers: { "x-request-id": 'bad\n{"injected":true}' },
     };
     const id = resolveRequestId(req);
 

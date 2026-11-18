@@ -21,7 +21,11 @@ export const AppEnvSchema = z
       });
     }
     if (env.NODE_ENV === "production") {
-      if (!env.JWT_SECRET || env.JWT_SECRET.length < 32 || env.JWT_SECRET === DEFAULT_DEV_JWT_SECRET) {
+      if (
+        !env.JWT_SECRET ||
+        env.JWT_SECRET.length < 32 ||
+        env.JWT_SECRET === DEFAULT_DEV_JWT_SECRET
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["JWT_SECRET"],

@@ -1,5 +1,5 @@
 import { Global, Inject, Injectable, Module, type OnModuleDestroy } from "@nestjs/common";
-import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { type PostgresJsDatabase, drizzle } from "drizzle-orm/postgres-js";
 import postgres, { type Sql } from "postgres";
 import { APP_ENV, type AppEnv } from "../config/env.config.js";
 import * as schema from "./schema.js";

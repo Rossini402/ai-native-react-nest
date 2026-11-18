@@ -1,20 +1,14 @@
 import {
+  Navigate,
+  Outlet,
   createRootRouteWithContext,
   createRoute,
   createRouter,
-  Navigate,
-  Outlet,
   redirect,
   useNavigate,
 } from "@tanstack/react-router";
-import { Badge } from "./components/ui/badge";
-import { Button } from "./components/ui/button";
-import {
-  authStore,
-  signOut,
-  useAuthSession,
-  useLoginMutation,
-} from "./features/auth/auth-store";
+import { AppShell } from "./components/layout/app-shell";
+import { authStore, signOut, useAuthSession, useLoginMutation } from "./features/auth/auth-store";
 import { LoginForm } from "./features/auth/login-form";
 import { TaskBoard } from "./features/tasks/task-board";
 import { useTasks } from "./features/tasks/use-tasks";
@@ -33,31 +27,9 @@ function RootLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-foreground)]">
-      <header className="border-b border-[var(--color-border)] bg-[var(--color-card)]">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3.5">
-          <div className="flex items-center gap-2.5">
-            <span className="text-sm font-semibold tracking-tight">
-              ai-native-react-nest
-            </span>
-            <Badge variant="secondary">React + NestJS + Zod</Badge>
-          </div>
-          {session && (
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-[var(--color-muted-foreground)]">
-                {session.user.email} ({session.user.role})
-              </span>
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
-                Sign Out
-              </Button>
-            </div>
-          )}
-        </div>
-      </header>
-      <main className="mx-auto max-w-3xl px-4 py-8">
-        <Outlet />
-      </main>
-    </div>
+    <AppShell session={session} onSignOut={handleSignOut}>
+      <Outlet />
+    </AppShell>
   );
 }
 
@@ -87,15 +59,13 @@ function LoginPage() {
   });
 
   return (
-    <div className="py-8">
-      <LoginForm
-        loading={loginMutation.isPending}
-        error={loginMutation.error instanceof Error ? loginMutation.error.message : null}
-        onSubmit={async (input) => {
-          await loginMutation.mutateAsync(input);
-        }}
-      />
-    </div>
+    <LoginForm
+      loading={loginMutation.isPending}
+      error={loginMutation.error instanceof Error ? loginMutation.error.message : null}
+      onSubmit={async (input) => {
+        await loginMutation.mutateAsync(input);
+      }}
+    />
   );
 }
 

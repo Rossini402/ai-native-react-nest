@@ -5,11 +5,7 @@ import {
   type NestInterceptor,
 } from "@nestjs/common";
 import { type Observable, tap } from "rxjs";
-import {
-  resolveRequestId,
-  type TraceableRequest,
-  type TraceableResponse,
-} from "./request-id.js";
+import { type TraceableRequest, type TraceableResponse, resolveRequestId } from "./request-id.js";
 
 export interface AccessLogEntry {
   timestamp: string;

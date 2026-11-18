@@ -31,7 +31,10 @@ function decodeBase64UrlJson(segment: string): unknown {
 export class JwtTokenService {
   constructor(@Inject(APP_ENV) private readonly env: AppEnv) {}
 
-  sign(user: AuthUser, nowEpochSeconds: number = Math.floor(Date.now() / 1000)): {
+  sign(
+    user: AuthUser,
+    nowEpochSeconds: number = Math.floor(Date.now() / 1000),
+  ): {
     accessToken: string;
     expiresInSeconds: number;
   } {

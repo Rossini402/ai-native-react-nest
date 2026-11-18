@@ -1,7 +1,9 @@
 import "@testing-library/jest-dom/vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { TaskBoard } from "./task-board";
+
+afterEach(cleanup);
 
 describe("TaskBoard", () => {
   it("renders explicit empty state when task list is empty", () => {

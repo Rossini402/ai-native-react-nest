@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DomainException } from "../../common/filters/domain-exception.filter.js";
+import type { DomainException } from "../../common/filters/domain-exception.filter.js";
 import { InMemoryTasksRepository } from "./tasks.repository.js";
 import { TasksService } from "./tasks.service.js";
 

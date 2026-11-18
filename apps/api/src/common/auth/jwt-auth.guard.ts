@@ -13,7 +13,7 @@ import { IS_PUBLIC_KEY } from "./public.decorator.js";
 
 export interface GuardExecutionContext {
   getHandler: ExecutionContext["getHandler"];
-  getClass: ExecutionContext["getClass"];
+  getClass(): ReturnType<ExecutionContext["getClass"]>;
   switchToHttp(): {
     getRequest<T = AuthenticatedRequest>(): T;
   };

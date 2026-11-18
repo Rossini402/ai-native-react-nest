@@ -1,25 +1,31 @@
 ---
 name: ui-component-story
 description: >-
-  Guides building pure React components with Tailwind CSS v4, Storybook 8 CSF3 stories,
-  and Vitest interaction tests in @repo/web. Activate this skill whenever creating or
-  modifying UI components, pages, or design system primitives in apps/web.
+  Guides building high-craft React UI components with unified design tokens, active
+  UI kit discipline (shadcn/ui or Ant Design v5), Storybook 8 CSF3 stories, and Vitest
+  interaction tests in @repo/web. Activate this skill whenever creating or modifying UI
+  components or pages in apps/web.
 ---
 
-# Pure UI Component + Storybook CSF3 Workflow
+# Unified Design-System Component + Storybook Workflow
 
-Design every React UI component so it renders deterministically in Storybook without a running backend or router.
+Ensure 100% global brand color, font, and radius consistency across the entire frontend.
 
-## Steps
+## 1. Global Token & Single-Track Rules
 
-1. **Reuse Primitives First**: Check `apps/web/src/components/ui/` (`Button`, `Input`, `Card`, `Badge`) and semantic CSS tokens in `apps/web/src/styles/globals.css` before creating new elements. Never write inline `style={{...}}`.
-2. **Keep Presentational Components Pure**:
-   - Accept typed data (`@repo/contracts` types) and callbacks (`onSubmit`, `onStatusChange`, etc.) via explicit `Props` interface.
-   - Keep TanStack Query hooks (`useQuery`, `useMutation`) inside companion `use-<domain>.ts` files, never inside the presentational `.tsx` component.
-3. **Write CSF3 Storybook Stories (`<component>.stories.tsx`)**:
-   - Type `meta` strictly with `satisfies Meta<typeof Component>` and `type Story = StoryObj<typeof meta>`.
-   - Use `fn()` from `@storybook/test` for action callbacks.
-   - Export stories for all relevant visual states: `Default`/`Populated`, `EmptyState`, `LoadingState`, and `ErrorState`.
-4. **Write Focused Vitest Component Test (`<component>.test.tsx`)**:
-   - Verify key user interactions (form submission, button clicks) and state rendering (`alert` role on error, empty state copy).
-5. **Verify**: Run `./scripts/verify.sh` (and `pnpm storybook:build` when dependencies are installed) to confirm zero type or governance regressions.
+1. **Check Active UI Track First**: Read `ACTIVE_UI_KIT` in `apps/web/src/design-system/tokens.ts`:
+   - When `ACTIVE_UI_KIT === "shadcn"`: Compose from `apps/web/src/components/ui/` (`Button`, `Input`, `Select`, `Tabs`, `Card`, `Badge`, `MetricCard`, `EmptyState`) and `lucide-react` icons. Pull additional primitives via `pnpm dlx shadcn@latest add <component>` if needed.
+   - When `ACTIVE_UI_KIT === "antd"`: Compose from `antd` components governed by `<AntdDesignSystemProvider>` (`toAntdThemeConfig`). Never mix `antd` and `@radix-ui/*` in `src/features/`.
+2. **Zero Hardcoded Brand Colors**:
+   - NEVER write `bg-indigo-*`, `bg-blue-*`, `text-violet-*`, etc. inside `src/components/` or `src/features/` (`check-governance.sh` blocks this!).
+   - Always bind brand emphasis to semantic CSS variables: `bg-[var(--color-primary)]`, `text-[var(--color-primary)]`, `bg-[var(--color-accent-subtle)]`, `rounded-[var(--radius-control)]`, `rounded-[var(--radius-card)]`.
+   - Semantic status feedback (`emerald` for success, `amber` for warning, `rose` for error) is permitted exclusively for status badges and alerts.
+3. **Typography & Spatial Craft**:
+   - Body text uses bundled `Inter Variable` + CJK stack; numeric KPIs (`tabular-nums`), versions, and IDs use bundled `JetBrains Mono Variable` (`font-mono`).
+   - Pair creation forms and data queues in a 12-column asymmetric split (`lg:grid-cols-12`) with a top 3-column `MetricCard` summary strip.
+
+## 2. Verification Steps
+
+1. Keep every `.tsx` file `<= 250` lines and pure (props in, callbacks out; keep `useQuery`/`useMutation` in `use-<domain>.ts`).
+2. Add CSF3 `*.stories.tsx` covering `Populated`, `EmptyState`, `LoadingState`, and `ErrorState`.
+3. Add `*.test.tsx` with `afterEach(cleanup)` and run `./scripts/verify.sh`.

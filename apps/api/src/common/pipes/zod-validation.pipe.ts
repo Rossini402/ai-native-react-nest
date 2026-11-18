@@ -1,11 +1,13 @@
 import type { PipeTransform } from "@nestjs/common";
-import type { ZodSchema } from "zod";
+import type { ZodType, ZodTypeDef } from "zod";
 import { DomainException } from "../filters/domain-exception.filter.js";
 
-export class ZodValidationPipe<T> implements PipeTransform<unknown, T> {
-  constructor(private readonly schema: ZodSchema<T>) {}
+export class ZodValidationPipe<TOutput, TInput = unknown>
+  implements PipeTransform<unknown, TOutput>
+{
+  constructor(private readonly schema: ZodType<TOutput, ZodTypeDef, TInput>) {}
 
-  transform(value: unknown): T {
+  transform(value: unknown): TOutput {
     const parsed = this.schema.safeParse(value);
     if (!parsed.success) {
       const details = parsed.error.issues.map(

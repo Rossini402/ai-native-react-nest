@@ -85,6 +85,31 @@ else
   pass "apps/web free of inline style={{}} hardcoding"
 fi
 
+# Rule C1b: Brand color token purity — forbid hardcoded brand hues outside src/design-system
+if grep -RInE '\b(bg|text|border|ring)-(indigo|blue|violet|purple|sky|cyan)-[0-9]{2,3}\b' apps/web/src/components apps/web/src/features >/dev/null 2>&1; then
+  grep -RInE '\b(bg|text|border|ring)-(indigo|blue|violet|purple|sky|cyan)-[0-9]{2,3}\b' apps/web/src/components apps/web/src/features >&2
+  fail "Hardcoded brand color utility found in components/features. Bind to var(--color-primary) / var(--color-accent-*) tokens instead."
+else
+  pass "apps/web 100% bound to semantic brand tokens (zero hardcoded brand hues)"
+fi
+
+# Rule C1c: Single-track UI Kit lock (never mix shadcn Radix & antd in features)
+if [ -f "apps/web/src/design-system/tokens.ts" ]; then
+  if grep -Fq 'ACTIVE_UI_KIT: UIKitTrack = "shadcn"' apps/web/src/design-system/tokens.ts; then
+    if grep -RInE 'from[[:space:]]+["'\'']antd["'\'']' apps/web/src/features >/dev/null 2>&1; then
+      fail "ACTIVE_UI_KIT is 'shadcn', but 'antd' is imported in apps/web/src/features."
+    else
+      pass "Single-track UI Kit lock intact (active: shadcn)"
+    fi
+  elif grep -Fq 'ACTIVE_UI_KIT: UIKitTrack = "antd"' apps/web/src/design-system/tokens.ts; then
+    if grep -RInE 'from[[:space:]]+["'\'']@radix-ui/' apps/web/src/features >/dev/null 2>&1; then
+      fail "ACTIVE_UI_KIT is 'antd', but '@radix-ui/*' is imported in apps/web/src/features."
+    else
+      pass "Single-track UI Kit lock intact (active: antd)"
+    fi
+  fi
+fi
+
 # Rule C2: Every feature slice in apps/web/src/features/<domain> must include Storybook (*.stories.tsx) & Tests (*.test.tsx)
 STORY_MISSING=0
 if [ -d "apps/web/src/features" ]; then
@@ -138,15 +163,23 @@ fi
 OVERSIZED=0
 for src_file in $(find packages apps -path '*/node_modules/*' -prune -o \( -name '*.ts' -o -name '*.tsx' \) -print 2>/dev/null); do
   lines=$(wc -l < "$src_file" | tr -d ' ')
-  if [ "$lines" -gt 350 ]; then
-    printf "    %s (%s lines > 350 ceiling)\n" "$src_file" "$lines" >&2
+  case "$src_file" in
+    apps/web/src/*.tsx|apps/web/src/**/*.tsx)
+      max_lines=250
+      ;;
+    *)
+      max_lines=350
+      ;;
+  esac
+  if [ "$lines" -gt "$max_lines" ]; then
+    printf "    %s (%s lines > %s ceiling)\n" "$src_file" "$lines" "$max_lines" >&2
     OVERSIZED=1
   fi
 done
 if [ "$OVERSIZED" -ne 0 ]; then
-  fail "One or more source files exceed the 350-line modularity ceiling."
+  fail "One or more source files exceed the modularity ceiling (250 lines for .tsx, 350 for .ts)."
 else
-  pass "All TypeScript source files within 350-line ceiling"
+  pass "All source files within modularity ceiling (<= 250 .tsx / <= 350 .ts)"
 fi
 
 echo "==> [5/5] Checking Spec-Driven Development Artifacts..."

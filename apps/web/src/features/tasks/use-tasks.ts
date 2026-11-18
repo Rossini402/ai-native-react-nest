@@ -34,8 +34,7 @@ export function useTasks(): UseTasksState {
     },
   });
 
-  const activeError =
-    listQuery.error ?? createMutation.error ?? statusMutation.error ?? null;
+  const activeError = listQuery.error ?? createMutation.error ?? statusMutation.error ?? null;
 
   return {
     tasks: listQuery.data ?? [],

@@ -1,48 +1,58 @@
+import { Slot } from "@radix-ui/react-slot";
+import { type VariantProps, cva } from "class-variance-authority";
 import type { ButtonHTMLAttributes } from "react";
 import { cn } from "../../lib/cn";
 
-export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "destructive";
-export type ButtonSize = "sm" | "md" | "lg";
+export const buttonVariants = cva(
+  "inline-flex items-center justify-center font-medium transition-all duration-150 cursor-pointer active:scale-[0.99] rounded-[var(--radius-control)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--color-ring)] disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        primary:
+          "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] shadow-xs hover:bg-[var(--color-primary-hover)]",
+        secondary: "bg-[var(--color-muted)] text-[var(--color-foreground)] hover:opacity-85",
+        outline:
+          "border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-foreground)] shadow-2xs hover:bg-[var(--color-muted)]",
+        ghost:
+          "text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]",
+        destructive:
+          "bg-[var(--color-destructive)] text-[var(--color-destructive-foreground)] shadow-xs hover:opacity-90",
+      },
+      size: {
+        sm: "h-8 gap-1.5 px-3 text-xs",
+        md: "h-9 gap-2 px-4 text-sm",
+        lg: "h-10 gap-2 px-5 text-sm",
+      },
+    },
+    defaultVariants: {
+      variant: "primary",
+      size: "md",
+    },
+  },
+);
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
+export type ButtonVariant = NonNullable<VariantProps<typeof buttonVariants>["variant"]>;
+export type ButtonSize = NonNullable<VariantProps<typeof buttonVariants>["size"]>;
+
+export interface ButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
 }
-
-const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary:
-    "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90 shadow-xs",
-  secondary:
-    "bg-[var(--color-muted)] text-[var(--color-foreground)] hover:bg-slate-200",
-  outline:
-    "border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-foreground)] hover:bg-[var(--color-muted)]",
-  ghost: "text-[var(--color-foreground)] hover:bg-[var(--color-muted)]",
-  destructive:
-    "bg-[var(--color-destructive)] text-[var(--color-destructive-foreground)] hover:opacity-90",
-};
-
-const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: "h-8 px-3 text-xs rounded-md",
-  md: "h-9 px-4 text-sm rounded-lg",
-  lg: "h-10 px-5 text-sm rounded-lg",
-};
 
 export function Button({
   className,
-  variant = "primary",
-  size = "md",
+  variant,
+  size,
+  asChild = false,
   type = "button",
   ...props
 }: ButtonProps) {
+  const Comp = asChild ? Slot : "button";
   return (
-    <button
-      type={type}
-      className={cn(
-        "inline-flex items-center justify-center font-medium transition-colors cursor-pointer disabled:pointer-events-none disabled:opacity-50",
-        VARIANT_CLASSES[variant],
-        SIZE_CLASSES[size],
-        className,
-      )}
+    <Comp
+      type={asChild ? undefined : type}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
   );

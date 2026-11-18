@@ -8,7 +8,11 @@ import { AuthService } from "./auth.service.js";
 import { DrizzleUsersRepository } from "./drizzle-users.repository.js";
 import { JwtTokenService } from "./jwt-token.service.js";
 import { PasswordHasher } from "./password-hasher.js";
-import { InMemoryUsersRepository, USERS_REPOSITORY, type UsersRepository } from "./users.repository.js";
+import {
+  InMemoryUsersRepository,
+  USERS_REPOSITORY,
+  type UsersRepository,
+} from "./users.repository.js";
 
 @Module({
   controllers: [AuthController],

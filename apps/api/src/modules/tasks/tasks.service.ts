@@ -18,7 +18,11 @@ export class TasksService {
   async transitionStatus(id: string, nextStatus: TaskStatus): Promise<Task> {
     const existing = await this.repo.findById(id);
     if (!existing) {
-      throw new DomainException("TASK_NOT_FOUND", `Task '${id}' was not found`, HttpStatus.NOT_FOUND);
+      throw new DomainException(
+        "TASK_NOT_FOUND",
+        `Task '${id}' was not found`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     if (existing.status === "done" && nextStatus === "todo") {

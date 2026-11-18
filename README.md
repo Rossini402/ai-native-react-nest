@@ -11,8 +11,20 @@ AI-Native Full-Stack Monorepo Template（React 19 + NestJS 11 + Zod Contracts + 
 | **Agent 工作流与护栏** | `.agents/skills/` & `.agents/hooks.json` | 按需加载 SDD、对抗审查、前后端并行编排技能；可选高危命令拦截 Hook |
 | **共享契约层** | `packages/contracts` (`@repo/contracts`) | Zod Schema + 自动推导 TS 类型 + 统一响应/错误码信封 |
 | **后端应用** | `apps/api` (`@repo/api`) | NestJS 11 + Drizzle ORM 双模持久化 + 全局默认拒绝 `JwtAuthGuard` |
-| **前端应用** | `apps/web` (`@repo/web`) | React 19 + TanStack Query/Router + Tailwind CSS v4 + Storybook 8 |
-| **确定性验证门禁** | `scripts/verify.sh` | 一键串起治理检查、跨层引用守卫、Biome、全栈 Typecheck 与 Vitest |
+| **前端与设计系统** | `apps/web` (`@repo/web`) | React 19 + TanStack Query/Router + 单一事实源 Token + `shadcn/ui` / `Ant Design v5` 双轨单选底座 + Storybook 8 |
+| **确定性验证门禁** | `scripts/verify.sh` | 一键串起治理检查、品牌色防泄漏、跨层引用守卫、Biome、全栈 Typecheck 与 Vitest |
+
+## 全局设计系统与双轨组件库选型
+
+新项目启动时，Agent 会通过 `.agents/skills/ui-architecture-selector/SKILL.md` 按目标人群与业务复杂度推荐并锁定单一 UI 轨道（共享同一份本地 `Inter` + `JetBrains Mono` 字体栈与 4 套行业色板预设）：
+
+```sh
+# 轨道 A（默认轻量内置）：现代 SaaS / AI 产品 / C 端体验 -> shadcn/ui (Radix + CVA + Lucide)
+pnpm ui:use shadcn --preset=obsidian          # 曜石极简 | electric-blue | emerald-forest
+
+# 轨道 B（按需一键切换）：ERP / 财务风控 / 重表格中后台 -> Ant Design v5 ConfigProvider
+pnpm ui:use antd --preset=enterprise-navy
+```
 
 ## 快速开始
 

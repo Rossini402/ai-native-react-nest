@@ -11,11 +11,11 @@ describe("Auth Contract Schemas", () => {
   });
 
   it("rejects malformed emails and short passwords", () => {
-    expect(LoginInputSchema.safeParse({ email: "not-an-email", password: "Password123!" }).success).toBe(
-      false,
-    );
-    expect(LoginInputSchema.safeParse({ email: "user@example.com", password: "short" }).success).toBe(
-      false,
-    );
+    expect(
+      LoginInputSchema.safeParse({ email: "not-an-email", password: "Password123!" }).success,
+    ).toBe(false);
+    expect(
+      LoginInputSchema.safeParse({ email: "user@example.com", password: "short" }).success,
+    ).toBe(false);
   });
 });

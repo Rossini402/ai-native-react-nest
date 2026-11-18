@@ -1,7 +1,9 @@
 import "@testing-library/jest-dom/vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { LoginForm } from "./login-form";
+
+afterEach(cleanup);
 
 describe("LoginForm", () => {
   it("submits trimmed credentials when form is submitted", () => {
@@ -23,9 +25,7 @@ describe("LoginForm", () => {
   });
 
   it("renders recoverable error banner when authentication fails", () => {
-    render(
-      <LoginForm loading={false} error="Invalid email or password" onSubmit={vi.fn()} />,
-    );
+    render(<LoginForm loading={false} error="Invalid email or password" onSubmit={vi.fn()} />);
     expect(screen.getByRole("alert")).toHaveTextContent("Invalid email or password");
   });
 });

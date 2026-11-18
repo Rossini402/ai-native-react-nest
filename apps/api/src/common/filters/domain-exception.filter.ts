@@ -7,9 +7,9 @@ import {
 } from "@nestjs/common";
 import type { ApiErrorEnvelope, ErrorCode } from "@repo/contracts";
 import {
-  resolveRequestId,
   type TraceableRequest,
   type TraceableResponse,
+  resolveRequestId,
 } from "../observability/request-id.js";
 
 export class DomainException extends Error {

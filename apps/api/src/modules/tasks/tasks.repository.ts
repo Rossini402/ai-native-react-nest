@@ -16,9 +16,7 @@ export class InMemoryTasksRepository implements TasksRepository {
   private readonly items = new Map<string, Task>();
 
   async findAll(): Promise<Task[]> {
-    return Array.from(this.items.values()).sort((a, b) =>
-      b.createdAt.localeCompare(a.createdAt),
-    );
+    return Array.from(this.items.values()).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
 
   async findById(id: string): Promise<Task | null> {
