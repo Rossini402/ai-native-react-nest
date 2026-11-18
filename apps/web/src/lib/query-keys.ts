@@ -1,3 +1,5 @@
+import type { ListReleasesQuery } from "@repo/contracts";
+
 export const queryKeys = {
   auth: {
     all: () => ["auth"] as const,
@@ -6,5 +8,9 @@ export const queryKeys = {
   tasks: {
     all: () => ["tasks"] as const,
     list: () => ["tasks", "list"] as const,
+  },
+  releases: {
+    all: () => ["releases"] as const,
+    list: (params: ListReleasesQuery) => ["releases", "list", params] as const,
   },
 } as const;

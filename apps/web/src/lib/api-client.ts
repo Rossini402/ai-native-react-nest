@@ -3,10 +3,17 @@ import {
   type AuthSession,
   AuthSessionResponseSchema,
   type AuthUser,
+  type CreateReleaseInput,
   type CreateTaskInput,
+  type ListReleasesQuery,
   type LoginInput,
   MeResponseSchema,
+  type PaginatedReleasesResponse,
+  PaginatedReleasesResponseSchema,
   REQUEST_ID_HEADER,
+  type ReleaseRequest,
+  ReleaseResponseSchema,
+  type ReviewReleaseInput,
   type Task,
   TaskListResponseSchema,
   TaskResponseSchema,
@@ -126,5 +133,38 @@ export const tasksApi = {
       body: JSON.stringify({ status }),
     });
     return TaskResponseSchema.parse(raw).data;
+  },
+};
+
+export const releasesApi = {
+  async list(query: ListReleasesQuery): Promise<PaginatedReleasesResponse> {
+    const params = new URLSearchParams({
+      page: String(query.page),
+      pageSize: String(query.pageSize),
+    });
+    if (query.status !== undefined) {
+      params.set("status", query.status);
+    }
+    if (query.environment !== undefined) {
+      params.set("environment", query.environment);
+    }
+    const raw = await requestJson(`/api/releases?${params.toString()}`);
+    return PaginatedReleasesResponseSchema.parse(raw);
+  },
+
+  async create(input: CreateReleaseInput): Promise<ReleaseRequest> {
+    const raw = await requestJson("/api/releases", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+    return ReleaseResponseSchema.parse(raw).data;
+  },
+
+  async review(id: string, input: ReviewReleaseInput): Promise<ReleaseRequest> {
+    const raw = await requestJson(`/api/releases/${encodeURIComponent(id)}/review`, {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+    return ReleaseResponseSchema.parse(raw).data;
   },
 };
