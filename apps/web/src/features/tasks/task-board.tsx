@@ -1,3 +1,4 @@
+import { PlusOutlined } from "@ant-design/icons";
 import {
   type CreateTaskInput,
   type Task,
@@ -5,22 +6,22 @@ import {
   TaskPrioritySchema,
   type TaskStatus,
 } from "@repo/contracts";
-import { AlertCircle, ArrowRight, Plus } from "lucide-react";
-import { type FormEvent, useState } from "react";
-import { Badge, type BadgeVariant } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
-import { EmptyState } from "../../components/ui/empty-state";
-import { Input } from "../../components/ui/input";
-import { MetricCard } from "../../components/ui/metric-card";
 import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  Input,
+  Row,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
-import { cn } from "../../lib/cn";
+  Space,
+  Statistic,
+  Table,
+  Tag,
+  Typography,
+} from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { type FormEvent, useState } from "react";
 
 export interface TaskBoardProps {
   tasks: Task[];
@@ -36,16 +37,16 @@ const NEXT_STATUS: Record<TaskStatus, TaskStatus | null> = {
   done: null,
 };
 
-const STATUS_VARIANT: Record<TaskStatus, BadgeVariant> = {
-  todo: "secondary",
-  in_progress: "warning",
-  done: "success",
+const PRIORITY_COLOR: Record<TaskPriority, string> = {
+  low: "default",
+  medium: "processing",
+  high: "error",
 };
 
-const PRIORITY_VARIANT: Record<TaskPriority, BadgeVariant> = {
-  low: "secondary",
-  medium: "accent",
-  high: "destructive",
+const STATUS_COLOR: Record<TaskStatus, string> = {
+  todo: "default",
+  in_progress: "warning",
+  done: "success",
 };
 
 export function TaskBoard({ tasks, loading, error, onCreate, onStatusChange }: TaskBoardProps) {
@@ -60,140 +61,120 @@ export function TaskBoard({ tasks, loading, error, onCreate, onStatusChange }: T
     setTitle("");
   };
 
-  const todoCount = tasks.filter((t) => t.status === "todo").length;
-  const inProgressCount = tasks.filter((t) => t.status === "in_progress").length;
-  const doneCount = tasks.filter((t) => t.status === "done").length;
+  const columns: ColumnsType<Task> = [
+    {
+      title: "Task Title",
+      dataIndex: "title",
+      key: "title",
+      render: (val: string, record) => (
+        <Typography.Text delete={record.status === "done"} strong={record.status !== "done"}>
+          {val}
+        </Typography.Text>
+      ),
+    },
+    {
+      title: "Priority",
+      dataIndex: "priority",
+      key: "priority",
+      width: 120,
+      render: (val: TaskPriority) => <Tag color={PRIORITY_COLOR[val]}>{val}</Tag>,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 140,
+      render: (val: TaskStatus) => <Tag color={STATUS_COLOR[val]}>{val}</Tag>,
+    },
+    {
+      title: "Operation",
+      key: "action",
+      width: 180,
+      render: (_, record) => {
+        const next = NEXT_STATUS[record.status];
+        return next ? (
+          <Button size="small" onClick={() => void onStatusChange(record.id, next)}>
+            Move to {next}
+          </Button>
+        ) : (
+          <Typography.Text type="secondary" className="text-xs">
+            Completed
+          </Typography.Text>
+        );
+      },
+    },
+  ];
 
   return (
-    <section aria-label="Task Board" className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight">Engineering Tasks</h1>
-            <Badge variant="accent">{tasks.length} items</Badge>
-          </div>
-          <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-            Golden vertical slice powered by unified design tokens, shadcn/ui Radix primitives, and
-            Zod contracts
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <MetricCard label="Backlog · Todo" value={todoCount} />
-        <MetricCard
-          label="Active · In Progress"
-          value={inProgressCount}
-          labelClassName="text-amber-600"
-        />
-        <MetricCard label="Shipped · Done" value={doneCount} labelClassName="text-emerald-600" />
-      </div>
-
-      <Card>
-        <CardContent className="flex flex-col gap-5 pt-6">
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-2.5 rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-muted)]/60 p-2.5 sm:flex-row sm:items-center"
-          >
-            <Input
-              aria-label="Task title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Capture an engineering task (e.g. Lock API pagination contract)..."
-              maxLength={120}
-              className="flex-1 bg-[var(--color-card)]"
+    <div aria-label="Task Board" className="flex flex-col gap-4">
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={8}>
+          <Card size="small">
+            <Statistic
+              title="Backlog (Todo)"
+              value={tasks.filter((t) => t.status === "todo").length}
             />
-            <div className="flex items-center gap-2">
-              <Select
-                value={priority}
-                onValueChange={(val) => {
-                  const parsed = TaskPrioritySchema.safeParse(val);
-                  if (parsed.success) setPriority(parsed.data);
-                }}
-              >
-                <SelectTrigger
-                  aria-label="Priority"
-                  className="w-36 bg-[var(--color-card)] text-xs"
-                >
-                  <SelectValue placeholder="Priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Priority: Low</SelectItem>
-                  <SelectItem value="medium">Priority: Medium</SelectItem>
-                  <SelectItem value="high">Priority: High</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button type="submit">
-                <Plus className="h-4 w-4" />
-                <span>Add Task</span>
-              </Button>
-            </div>
-          </form>
-
-          {error && (
-            <div
-              role="alert"
-              className="flex items-center gap-2 rounded-[var(--radius-control)] border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-medium text-rose-700"
-            >
-              <AlertCircle className="h-4 w-4 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {loading ? (
-            <div className="flex flex-col gap-2.5 py-4">
-              <div className="h-14 animate-pulse rounded-[var(--radius-control)] bg-[var(--color-muted)]" />
-              <div className="h-14 animate-pulse rounded-[var(--radius-control)] bg-[var(--color-muted)]" />
-              <p className="text-center text-xs text-[var(--color-muted-foreground)]">
-                Loading tasks...
-              </p>
-            </div>
-          ) : tasks.length === 0 ? (
-            <EmptyState
-              title="No tasks yet. Create your first task above."
-              description="Tasks transition deterministically from todo → in_progress → done."
+          </Card>
+        </Col>
+        <Col xs={24} sm={8}>
+          <Card size="small">
+            <Statistic
+              title="In Progress"
+              value={tasks.filter((t) => t.status === "in_progress").length}
             />
-          ) : (
-            <ul className="flex flex-col divide-y divide-[var(--color-border)] rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-card)]">
-              {tasks.map((task) => {
-                const next = NEXT_STATUS[task.status];
-                return (
-                  <li
-                    key={task.id}
-                    className="flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 transition-colors hover:bg-[var(--color-muted)]/50"
-                  >
-                    <div className="flex min-w-0 flex-wrap items-center gap-2.5">
-                      <span
-                        className={cn(
-                          "text-sm font-medium",
-                          task.status === "done" &&
-                            "text-[var(--color-muted-foreground)] line-through",
-                        )}
-                      >
-                        {task.title}
-                      </span>
-                      <Badge variant={PRIORITY_VARIANT[task.priority]}>{task.priority}</Badge>
-                      <Badge variant={STATUS_VARIANT[task.status]} dot>
-                        {task.status}
-                      </Badge>
-                    </div>
-                    {next && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => void onStatusChange(task.id, next)}
-                      >
-                        <span>Move to {next}</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </Button>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </CardContent>
+          </Card>
+        </Col>
+        <Col xs={24} sm={8}>
+          <Card size="small">
+            <Statistic title="Completed" value={tasks.filter((t) => t.status === "done").length} />
+          </Card>
+        </Col>
+      </Row>
+
+      <Card title="Engineering Task Ledger (Ant Design Table)">
+        <form onSubmit={handleSubmit} className="mb-4 flex flex-wrap items-center gap-2">
+          <Input
+            aria-label="Task title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter task summary..."
+            maxLength={120}
+            className="max-w-md flex-1"
+          />
+          <Select
+            aria-label="Priority"
+            value={priority}
+            onChange={(val) => {
+              const parsed = TaskPrioritySchema.safeParse(val);
+              if (parsed.success) setPriority(parsed.data);
+            }}
+            options={[
+              { value: "low", label: "Low Priority" },
+              { value: "medium", label: "Medium Priority" },
+              { value: "high", label: "High Priority" },
+            ]}
+            className="w-40"
+          />
+          <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+            Add Task
+          </Button>
+        </form>
+
+        {error && <Alert role="alert" type="error" showIcon message={error} className="mb-4" />}
+
+        <Space direction="vertical" className="w-full">
+          <Table<Task>
+            rowKey="id"
+            size="middle"
+            bordered
+            loading={loading}
+            columns={columns}
+            dataSource={tasks}
+            pagination={false}
+            locale={{ emptyText: "No tasks yet. Create your first task above." }}
+          />
+        </Space>
       </Card>
-    </section>
+    </div>
   );
 }

@@ -6,8 +6,8 @@ export type BrandPresetId = "obsidian" | "electric-blue" | "enterprise-navy" | "
  * Canonical single-track UI kit lock for this repository.
  * Switch deterministically via: `pnpm ui:use <shadcn|antd> --preset=<id>`
  */
-export const ACTIVE_UI_KIT: UIKitTrack = "shadcn";
-export const DEFAULT_BRAND_PRESET: BrandPresetId = "obsidian";
+export const ACTIVE_UI_KIT: UIKitTrack = "antd";
+export const DEFAULT_BRAND_PRESET: BrandPresetId = "enterprise-navy";
 
 export const FONT_STACK_SANS =
   '"Inter Variable", "Inter", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif';
